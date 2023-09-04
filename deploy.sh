@@ -1,0 +1,1 @@
+docker build -t fremont-hills .;docker tag fremont-hills:latest 684608448228.dkr.ecr.us-west-1.amazonaws.com/fremont-hills:latest;docker push 684608448228.dkr.ecr.us-west-1.amazonaws.com/fremont-hills:latest
