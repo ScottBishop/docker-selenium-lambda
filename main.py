@@ -1,6 +1,8 @@
 import os
 import time
 import boto3
+import pytz
+from datetime import datetime
 from selenium import webdriver
 from tempfile import mkdtemp
 from selenium import webdriver
@@ -20,7 +22,7 @@ def handler(event=None, context=None):
     options.add_argument('--headless')
     options.add_argument('--no-sandbox')
     options.add_argument("--disable-gpu")
-    options.add_argument("--window-size=1280x1696")
+    options.add_argument("--window-size=1280x2000")
     options.add_argument("--single-process")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-dev-tools")
@@ -59,10 +61,13 @@ def handler(event=None, context=None):
         # Scroll to the target element using JavaScript
         driver.execute_script("arguments[0].scrollIntoView();", target_element)
 
-        # Capture a screenshot with a timestamp as the filename
-        timestamp = time.strftime("%Y%m%d%H%M%S")
-        screenshot_name = f"screenshot_{timestamp}.png"
-        screenshot_path = "/tmp/" + screenshot_name  # Lambda's /tmp directory
+        # Get the current time in Pacific Time (PST)
+        pacific_timezone = pytz.timezone('America/Los_Angeles')
+        current_time_pst = datetime.now(pacific_timezone)
+        timestamp = current_time_pst.strftime('%Y-%m-%d_%H-%M')
+        screenshot_filename = f'screenshot_{timestamp}.png'
+        
+        screenshot_path = "/tmp/" + screenshot_filename  # Lambda's /tmp directory
 
         driver.save_screenshot(screenshot_path)
 
@@ -76,7 +81,7 @@ def handler(event=None, context=None):
 
         # Upload screenshot to S3
         bucket_name = 'fremont-hills'
-        s3.upload_file(screenshot_path, bucket_name, screenshot_name)
+        s3.upload_file(screenshot_path, bucket_name, screenshot_filename)
     finally:
         driver.quit()
 

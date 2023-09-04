@@ -11,6 +11,7 @@ RUN yum install atk cups-libs gtk3 libXcomposite alsa-lib \
     libXtst pango at-spi2-atk libXt xorg-x11-server-Xvfb \
     xorg-x11-xauth dbus-glib dbus-glib-devel -y
 RUN pip install selenium==4.12.0
+RUN pip install pytz==2023.3
 COPY --from=build /opt/chrome-linux /opt/chrome
 COPY --from=build /opt/chromedriver /opt/
 COPY main.py ./
